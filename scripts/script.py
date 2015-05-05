@@ -76,10 +76,10 @@ def main():
                     matches = fnmatch.filter(files, '*_R2_*')
                     rev_reads += [join(root, match) for match in matches]
 
-                logging.error('R1files: %s', R1files)
-                logging.error('R2files: %s', R2files)
+                logging.error('R1files: %s', fwd_reads)
+                logging.error('R2files: %s', rev_reads)
 
-                if len(R1files) != len(R2files):
+                if len(fwd_reads) != len(rev_reads):
                     print "number of R1 and R2 files do not match"
                     sys.exit()
 
@@ -91,8 +91,11 @@ def main():
                 # where you would run the command)
                 fn = '%s/seqs-summary.txt' % (sampleOutDir)
 
-                cmd = 'count_seqs.py -i %s,%s > %s' % (','.join(fwd_reads),
-                                                       ','.join(rev_reads), fn)
+                cmd = "count_seqs.py -i %s,%s > '%s'" % (','.join(fwd_reads),
+                                                         ','.join(rev_reads), fn)
+
+                logging.error(cmd)
+
                 out, err, ret = qcli_system_call(cmd)
                 logging.info(out)
                 logging.error(err)
