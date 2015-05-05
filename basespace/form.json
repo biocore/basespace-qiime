@@ -1,25 +1,6 @@
 {
     "$type": "Form",
     "fields": [
-
-        {
-            "$type": "RadioButton",
-        	"id": "random-radio",
-        	"label": "Do you want to make the command fail?",
-        	"value": 0,
-        	"choices": [
-        		{
-        			"value": 0,
-        			"label": "No"
-        		},
-        		{
-        			"value": 1,
-        			"label": "Yes"
-        		}
-        	]
-        },
-
-
         {
             "$type": "SectionBreak"
         },
