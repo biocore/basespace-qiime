@@ -89,17 +89,28 @@ def main():
 
                 # create output file and print parameters to output file (this is
                 # where you would run the command)
-                fn = '%s/seqs-summary.txt' % (sampleOutDir)
+                #fn = '%s/seqs-summary.txt' % (sampleOutDir)
+                fn = '%s/parameters.csv' % (sampleOutDir)
 
-                cmd = "count_seqs.py -i %s,%s > '%s'" % (','.join(fwd_reads),
-                                                         ','.join(rev_reads), fn)
+                for f in fwd_reads + rev_reads:
+                    cmd = 'gunzip %s' % f
+                    logging.error(cmd)
+                    rets = qcli_system_call(cmd)
+                    logging.error(rets)
 
+                cmd = "count_seqs.py -i %s,%s" % (','.join(fwd_reads),
+                                                  ','.join(rev_reads))
+                cmd = cmd.replace('.gz', '')
                 logging.error(cmd)
 
                 out, err, ret = qcli_system_call(cmd)
-                logging.info(out)
+                logging.error(out)
                 logging.error(err)
-                logging.info('return code is: %s', ret)
+                logging.error('return code is: %s', ret)
+
+                logging.error('writting file to %s', fn)
+                with open(fn, 'w') as fd:
+                    fd.write(out)
 
                 # outFile = open(file ,'w')
                 # count = 0
