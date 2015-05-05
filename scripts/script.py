@@ -5,6 +5,7 @@ import json
 import logging
 
 from qcli import qcli_system_call
+from os.path import join
 
 def metadatajson():
     json_file = json.dumps({"Name": "", "Description": "",
@@ -66,10 +67,14 @@ def main():
                 logging.error('The sampleDir name is %s', sampleDir)
                 logging.error('The directory exists? %s', os.path.exists(sampleDir))
 
-                #for root, dirs, files in os.walk(sampleDir[sample]):
+                fwd_reads = []
+                rev_reads = []
+
                 for root, dirs, files in os.walk(sampleDir):
-                    R1files = fnmatch.filter(files,'*_R1_*')
-                    R2files = fnmatch.filter(files,'*_R2_*')
+                    matches = fnmatch.filter(files, '*_R1_*')
+                    fwd_reads += [join(root, match) for match in matches]
+                    matches = fnmatch.filter(files, '*_R2_*')
+                    rev_reads += [join(root, match) for match in matches]
 
                 logging.error('R1files: %s', R1files)
                 logging.error('R2files: %s', R2files)
@@ -86,8 +91,8 @@ def main():
                 # where you would run the command)
                 fn = '%s/seqs-summary.txt' % (sampleOutDir)
 
-                cmd = 'count_seqs.py -i %s,%s > %s' % (','.join(R1files),
-                                                       ','.join(R2files), fn)
+                cmd = 'count_seqs.py -i %s,%s > %s' % (','.join(fwd_reads),
+                                                       ','.join(rev_reads), fn)
                 out, err, ret = qcli_system_call(cmd)
                 logging.info(out)
                 logging.error(err)
