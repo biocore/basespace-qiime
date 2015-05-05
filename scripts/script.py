@@ -5,6 +5,7 @@ import json
 import logging
 
 from qcli import qcli_system_call
+from skbio import create_dir
 from os.path import join
 
 def metadatajson():
@@ -17,13 +18,13 @@ def metadatajson():
 
 def main():
 
-    #app specific definitions (not needed for personal app)
-    parameter_list = []
     # load json file
     jsonfile = open('/data/input/AppSession.json')
     jsonObject = json.load(jsonfile)
+
     # determine the number of properties
     numberOfPropertyItems = len(jsonObject['Properties']['Items'])
+
     # loop over properties
     sampleID = []
     sampleHref = []
@@ -31,20 +32,6 @@ def main():
     sampleDir = []
 
     for index in range(numberOfPropertyItems):
-        # add parameters to parameters list
-        if jsonObject['Properties']['Items'][index]['Name'] == 'Input.textbox':
-                parameter = jsonObject['Properties']['Items'][index]['Content']
-                parameter_list.append(parameter)
-        if jsonObject['Properties']['Items'][index]['Name'] == 'Input.radio':
-                    parameter = jsonObject['Properties']['Items'][index]['Content']
-                    parameter_list.append(parameter)
-        if jsonObject['Properties']['Items'][index]['Name'] == 'Input.checkbox':
-                    parameter = jsonObject['Properties']['Items'][index]['Items'][0]
-                    parameter_list.append(parameter)
-        if jsonObject['Properties']['Items'][index]['Name'] == 'Input.numeric':
-                    parameter = jsonObject['Properties']['Items'][index]['Content']
-                    parameter_list.append(parameter)
-
         # set project ID
         if jsonObject['Properties']['Items'][index]['Name'] == 'Input.Projects':
             projectID = jsonObject['Properties']['Items'][index]['Items'][0]['Id']
@@ -80,18 +67,16 @@ def main():
                 logging.error('R2files: %s', rev_reads)
 
                 if len(fwd_reads) != len(rev_reads):
-                    print "number of R1 and R2 files do not match"
-                    sys.exit()
+                    logging.error("Number of R1 and R2 files do not match")
+                    return 1
 
                 sampleOutDir = '/data/output/appresults/%s/%s' % (projectID,
                                                                   sampleName[sample])
-                os.system('mkdir -p "%s"' %(sampleOutDir))
+                create_dir(sampleOutDir)
 
-                # create output file and print parameters to output file (this is
-                # where you would run the command)
-                #fn = '%s/seqs-summary.txt' % (sampleOutDir)
-                fn = '%s/parameters.csv' % (sampleOutDir)
+                fn = '%s/seqs-summary.txt' % (sampleOutDir)
 
+                # unzip all the sequences so count_seqs.py can read the data
                 for f in fwd_reads + rev_reads:
                     cmd = 'gunzip %s' % f
                     logging.error(cmd)
@@ -109,15 +94,8 @@ def main():
                 logging.error('return code is: %s', ret)
 
                 logging.error('writting file to %s', fn)
-                with open(fn, 'w') as fd:
+                with open(fn, 'wa') as fd:
                     fd.write(out)
-
-                # outFile = open(file ,'w')
-                # count = 0
-                    # for parameter in parameter_list:
-                #     count += 1
-                #     outFile.write('%s,%s\n' %(count,parameter))
-                        # outFile.close()
 
                 # create metadata file for each appresult
                 metadataObject = metadatajson()
@@ -136,4 +114,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
