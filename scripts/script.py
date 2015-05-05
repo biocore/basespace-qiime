@@ -5,7 +5,7 @@ import json
 import logging
 
 from qcli import qcli_system_call
-from skbio import create_dir
+from skbio.util import create_dir
 from os.path import join
 
 def metadatajson():
