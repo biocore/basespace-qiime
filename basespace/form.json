@@ -2,10 +2,6 @@
     "$type": "Form",
     "fields": [
         {
-            "$type": "SectionBreak"
-        },
-
-        {
             "$type": "TextBox",
             "size": 400,
             "minLength": 0,
@@ -17,19 +13,30 @@
             "id": "app-session-name"
         },
         {
+            "$type": "TextBox",
+            "size": 400,
+            "minLength": 0,
+            "maxLength": 150,
+            "value": "",
+            "label": "Spreadsheet Key",
+            "required": true,
+            "requiredMessage": "Please enter the key of your mapping file.",
+            "id": "spreadsheet-key"
+        },
+        {
             "$type": "SampleChooser",
-            "size": 300,
+            "size": 400,
             "valueType": "Input",
-            "multiselect": true,
             "allowedPermissions": "read",
-            "label": "Sample",
-            "required": false,
+            "label": "Samples to Process",
+            "required": true,
             "id": "sample-id",
-            "rules": "sample-reader"
-        },      
+            "rules": "sample-reader",
+            "multiselect": true
+        },
         {
             "$type": "ProjectChooser",
-            "size": 300,
+            "size": 400,
             "valueType": "Output",
             "allowedPermissions": "owner",
             "label": "Save Results To",
