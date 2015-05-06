@@ -66,10 +66,6 @@ def main():
                 logging.error('R1files: %s', fwd_reads)
                 logging.error('R2files: %s', rev_reads)
 
-                if len(fwd_reads) != len(rev_reads):
-                    logging.error("Number of R1 and R2 files do not match")
-                    return 1
-
                 sampleOutDir = '/data/output/appresults/%s/%s' % (projectID,
                                                                   sampleName[sample])
                 create_dir(sampleOutDir)
@@ -83,8 +79,7 @@ def main():
                     rets = qcli_system_call(cmd)
                     logging.error(rets)
 
-                cmd = "count_seqs.py -i %s,%s" % (','.join(fwd_reads),
-                                                  ','.join(rev_reads))
+                cmd = "count_seqs.py -i %s" % (','.join(fwd_reads+rev_reads))
                 cmd = cmd.replace('.gz', '')
                 logging.error(cmd)
 
