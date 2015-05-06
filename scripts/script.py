@@ -8,13 +8,6 @@ from qcli import qcli_system_call
 from skbio.util import create_dir
 from os.path import join
 
-def metadatajson():
-    json_file = json.dumps({"Name": "", "Description": "",
-                            "HrefAppSession": "",
-                            "Properties": [{"Type": "sample[]",
-                                            "Name": "Input.Samples",
-                                            "Items": []}]})
-    return json_file
 
 def main():
 
@@ -91,21 +84,6 @@ def main():
                 logging.error('writting file to %s', fn)
                 with open(fn, 'wa') as fd:
                     fd.write(out)
-
-                # create metadata file for each appresult
-                metadataObject = metadatajson()
-                metaJsonObject = json.loads(metadataObject)
-
-                # modify metadataObject
-                metaJsonObject['Name'] = jsonObject['Properties']['Items'][index]['Items'][sample]['Id']
-                metaJsonObject['Description'] = 'Sample Description'
-                metaJsonObject['HrefAppSession'] = jsonObject['Href']
-                for href in sampleHref:
-                    metaJsonObject['Properties'][0]['Items'].append(href)
-
-                metadataFile = '%s/_metadata.json' %(sampleOutDir)
-                outMetadataFile = open(metadataFile, 'w')
-                json.dump(metaJsonObject, outMetadataFile)
 
 
 if __name__ == '__main__':
