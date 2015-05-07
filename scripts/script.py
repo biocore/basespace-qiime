@@ -86,14 +86,20 @@ def main():
                           'analyses.')
             return 11
 
+        params_fp = join(base, 'alpha-params.txt')
+        with open(params_fp, 'w') as alpha_fp:
+            alpha_fp.write('alpha_diversity:metrics shannon,PD_whole_tree,'
+                           'chao1,observed_species')
+
         # cast as int or core diversity will reject the value
         depth = int(guess_even_sampling_depth(bt.nonzero_counts('sample')))
         cmd = ("core_diversity_analyses.py "
                "-i {biom_fp} -o {output_dir} -m {mapping_fp} -e {depth} "
-               "-t {tree_fp} -a -O {jobs}")
+               "-t {tree_fp} -a -O {jobs} -p {params_fp} "
+               "--nonphylogenetic_diversity")
         params = {'biom_fp': biom_fp, 'output_dir': output_dir,
-                'mapping_fp': mapping_fp, 'depth': depth, 'jobs': '30',
-                'tree_fp': tree_fp}
+                  'mapping_fp': mapping_fp, 'depth': depth, 'jobs': '4',
+                  'tree_fp': tree_fp, 'params_fp': params_fp}
         system_call(cmd.format(**params))
 
         for log_file in glob(join(output_dir, 'log_*')):
