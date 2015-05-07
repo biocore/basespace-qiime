@@ -95,8 +95,7 @@ def main():
         depth = int(guess_even_sampling_depth(bt.nonzero_counts('sample')))
         cmd = ("core_diversity_analyses.py "
                "-i {biom_fp} -o {output_dir} -m {mapping_fp} -e {depth} "
-               "-t {tree_fp} -a -O {jobs} -p {params_fp} "
-               "--nonphylogenetic_diversity")
+               "-t {tree_fp} -a -O {jobs} -p {params_fp}")
         params = {'biom_fp': biom_fp, 'output_dir': output_dir,
                   'mapping_fp': mapping_fp, 'depth': depth, 'jobs': '4',
                   'tree_fp': tree_fp, 'params_fp': params_fp}
