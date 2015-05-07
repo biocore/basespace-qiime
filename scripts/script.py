@@ -86,7 +86,8 @@ def main():
                           'analyses.')
             return 11
 
-        depth = guess_even_sampling_depth(bt.nonzero_counts('sample'))
+        # cast as int or core diversity will reject the value
+        depth = int(guess_even_sampling_depth(bt.nonzero_counts('sample')))
         cmd = ("core_diversity_analyses.py "
                "-i {biom_fp} -o {output_dir} -m {mapping_fp} -e {depth}"
                "-t {tree_fp} -a -O {jobs}")
