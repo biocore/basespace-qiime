@@ -8,7 +8,9 @@ from glob import glob
 from os.path import join
 
 from qcli import qcli_system_call
+from biom import load_table
 from skbio.util import create_dir
+from qiime.util import guess_even_sampling_depth
 
 
 def system_call(cmd, shell=True):
@@ -23,21 +25,19 @@ def system_call(cmd, shell=True):
 
 def main():
 
-    # load json file
-    jsonfile = open('/data/input/AppSession.json')
-    app_session = json.load(jsonfile)
+    spreadsheet_key = None
 
-    # determine the number of properties
-    properties_num = len(app_session['Properties']['Items'])
+    with open('/data/input/AppSession.json', 'U') as fd_json:
+        app = json.load(fd_json)
 
     # get command attributes, etc
-    for index in range(properties_num):
+    for index in range(app['Properties']['Items']):
         # set project ID
-        if app_session['Properties']['Items'][index]['Name'] == \
-                'Input.Projects':
-            project_id = \
-                    app_session['Properties']['Items'][index]['Items'][0]['Id']
-
+        if app['Properties']['Items'][index]['Name'] == 'Input.Projects':
+            project_id = app['Properties']['Items'][index]['Items'][0]['Id']
+        if app['Properties']['Items'][index]['Name'] == \
+                'Input.spreadsheet-key':
+            spreadsheet_key = app['Properties']['Items'][index]['Content']
 
     # from BaseSpace's documentation
     input_dir = '/data/input/samples/'
@@ -57,6 +57,7 @@ def main():
         with open(log_file, 'U') as fd_log:
             print fd_log.read()
 
+    # OTU picking
     input_dir = join(output_dir, 'seqs.fna')
     output_dir = join(base, 'closed-ref')
     cmd = ("pick_closed_reference_otus.py "
@@ -67,6 +68,41 @@ def main():
     for log_file in glob(join(output_dir, 'log_*')):
         with open(log_file, 'U') as fd_log:
             print fd_log.read()
+
+    if spreadsheet_key:
+        mapping_fp = join(base, 'mapping-file.txt')
+        cmd = ("load_remote_mapping_file.py "
+               "-k {spreadsheet_key} -o {mapping_fp}")
+        params = {'spreadsheet_key': spreadsheet_key, 'mapping_fp': mapping_fp}
+
+        system_call(cmd.format(**params))
+
+        biom_fp = join(output_dir, 'otu_table.biom')
+        tree_fp = glob(join(output_dir, '*.tree'))[0]
+        output_dir = join(base, 'corediv-out')
+
+        bt = load_table(biom_fp)
+
+        if bt.is_empty():
+            logging.error('BIOM table is empty, cannot perform diversity '
+                          'analyses.')
+            return 11
+
+        depth = guess_even_sampling_depth(bt.nonzero_counts('sample'))
+        cmd = ("core_diversity_analyses.py "
+               "-i {biom_fp} -o {output_dir} -m {mapping_fp} -e {depth}"
+               "-t {tree_fp} -a -O {jobs}")
+        params = {'biom_fp': biom_fp, 'output_dir': output_dir,
+                'mapping_fp': mapping_fp, 'depth': depth, 'jobs': '30',
+                'tree_fp': tree_fp}
+        system_call(cmd.format(**params))
+
+        for log_file in glob(join(output_dir, 'log_*')):
+            with open(log_file, 'U') as fd_log:
+                print fd_log.read()
+
+    return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())
