@@ -31,13 +31,11 @@ def main():
         app = json.load(fd_json)
 
     # get command attributes, etc
-    for index in range(app['Properties']['Items']):
-        # set project ID
-        if app['Properties']['Items'][index]['Name'] == 'Input.Projects':
-            project_id = app['Properties']['Items'][index]['Items'][0]['Id']
-        if app['Properties']['Items'][index]['Name'] == \
-                'Input.spreadsheet-key':
-            spreadsheet_key = app['Properties']['Items'][index]['Content']
+    for item in app['Properties']['Items']:
+        if item['Name'] == 'Input.Projects':
+            project_id = item['Items'][0]['Id']
+        if item['Name'] == 'Input.spreadsheet-key':
+            spreadsheet_key = item['Content']
 
     # from BaseSpace's documentation
     input_dir = '/data/input/samples/'
