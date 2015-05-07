@@ -1,89 +1,55 @@
-import os
-import fnmatch
+#!/usr/bin/env python
+
 import sys
 import json
 import logging
 
+from glob import glob
+from os.path import join
+
 from qcli import qcli_system_call
 from skbio.util import create_dir
-from os.path import join
 
 
 def main():
 
     # load json file
     jsonfile = open('/data/input/AppSession.json')
-    jsonObject = json.load(jsonfile)
+    app_session = json.load(jsonfile)
 
     # determine the number of properties
-    numberOfPropertyItems = len(jsonObject['Properties']['Items'])
+    properties_num = len(app_session['Properties']['Items'])
 
-    # loop over properties
-    sampleID = []
-    sampleHref = []
-    sampleName = []
-    sampleDir = []
-
-    for index in range(numberOfPropertyItems):
+    # get command attributes, etc
+    for index in range(properties_num):
         # set project ID
-        if jsonObject['Properties']['Items'][index]['Name'] == 'Input.Projects':
-            projectID = jsonObject['Properties']['Items'][index]['Items'][0]['Id']
+        if app_session['Properties']['Items'][index]['Name'] == \
+                'Input.Projects':
+            project_id = \
+                    app_session['Properties']['Items'][index]['Items'][0]['Id']
 
-    for index in range(numberOfPropertyItems):
-        # set sample parameters
-        if jsonObject['Properties']['Items'][index]['Name'] == 'Input.Samples':
-            for sample in range(len(jsonObject['Properties']['Items'][index]['Items'])):
-                sampleID.append(jsonObject['Properties']['Items'][index]['Items'][sample]['Id'])
-                sampleHref.append(jsonObject['Properties']['Items'][index]['Items'][sample]['Href'])
-                sampleName.append(jsonObject['Properties']['Items'][index]['Items'][sample]['Name'])
-                sampleDir = '/data/input/samples/%s/Data/Intensities/BaseCalls' %(sampleID[sample])
 
-                logging.error('The sampleDir name is %s', sampleDir)
-                logging.error('The directory exists? %s', os.path.exists(sampleDir))
+    # from BaseSpace's documentation
+    input_dir = '/data/input/samples/'
+    output_dir = join('/data/output/appresults/', project_id, 'sl_out')
 
-                if not os.path.exists(sampleDir):
-                    sampleDir = '/data/input/samples/%s' %(sampleID[sample])
+    # for sanity
+    create_dir(output_dir)
 
-                logging.error('The sampleDir name is %s', sampleDir)
-                logging.error('The directory exists? %s', os.path.exists(sampleDir))
+    cmd = ("multiple_split_libraries_fastq.py "
+           "-i '{input_dir}' -o '{output_dir}'")
+    params = {'input_dir': input_dir, 'output_dir': output_dir}
 
-                fwd_reads = []
-                rev_reads = []
+    info = qcli_system_call(cmd.format(**params))
 
-                for root, dirs, files in os.walk(sampleDir):
-                    matches = fnmatch.filter(files, '*_R1_*')
-                    fwd_reads += [join(root, match) for match in matches]
-                    matches = fnmatch.filter(files, '*_R2_*')
-                    rev_reads += [join(root, match) for match in matches]
+    if info[2] != 0:
+        logging.error('STDOUT: '+info[0])
+        logging.error('STDERR: '+info[1])
+        return info[2]
 
-                logging.error('R1files: %s', fwd_reads)
-                logging.error('R2files: %s', rev_reads)
-
-                sampleOutDir = '/data/output/appresults/%s/%s' % (projectID,
-                                                                  sampleName[sample])
-                create_dir(sampleOutDir)
-
-                fn = '%s/seqs-summary.txt' % (sampleOutDir)
-
-                # unzip all the sequences so count_seqs.py can read the data
-                for f in fwd_reads + rev_reads:
-                    cmd = 'gunzip %s' % f
-                    logging.error(cmd)
-                    rets = qcli_system_call(cmd)
-                    logging.error(rets)
-
-                cmd = "count_seqs.py -i %s" % (','.join(fwd_reads+rev_reads))
-                cmd = cmd.replace('.gz', '')
-                logging.error(cmd)
-
-                out, err, ret = qcli_system_call(cmd)
-                logging.error(out)
-                logging.error(err)
-                logging.error('return code is: %s', ret)
-
-                logging.error('writting file to %s', fn)
-                with open(fn, 'wa') as fd:
-                    fd.write(out)
+    for log_file in glob(join(output_dir, 'log_*')):
+        with open(log_file, 'U') as fd_log:
+            print fd_log.read()
 
 
 if __name__ == '__main__':
