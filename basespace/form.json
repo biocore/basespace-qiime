@@ -3,7 +3,7 @@
     "fields": [
         {
             "$type": "TextBox",
-            "size": 400,
+            "size": 500,
             "minLength": 0,
             "maxLength": 150,
             "value": "Example [LocalDateTime]",
@@ -14,7 +14,7 @@
         },
         {
             "$type": "TextBox",
-            "size": 400,
+            "size": 500,
             "minLength": 0,
             "maxLength": 150,
             "value": "",
@@ -31,7 +31,7 @@
             "label": "Samples to Process",
             "required": true,
             "id": "sample-id",
-            "rules": "sample-reader",
+            "rules": "sample-is-not-empty" ,
             "multiselect": true
         },
         {
