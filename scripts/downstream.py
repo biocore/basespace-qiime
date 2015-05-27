@@ -10,7 +10,6 @@ from os.path import join
 from qcli import qcli_system_call
 from biom import load_table
 from skbio.util import create_dir
-from qiime.util import guess_even_sampling_depth
 
 
 def system_call(cmd, shell=True):

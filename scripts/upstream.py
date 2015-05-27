@@ -10,7 +10,6 @@ from os.path import join
 from qcli import qcli_system_call
 from biom import load_table
 from skbio.util import create_dir
-from qiime.util import guess_even_sampling_depth
 
 
 def system_call(cmd, shell=True):
@@ -25,8 +24,6 @@ def system_call(cmd, shell=True):
 
 def main():
 
-    spreadsheet_key = None
-
     with open('/data/input/AppSession.json', 'U') as fd_json:
         app = json.load(fd_json)
 
@@ -34,8 +31,6 @@ def main():
     for item in app['Properties']['Items']:
         if item['Name'] == 'Input.Projects':
             project_id = item['Items'][0]['Id']
-        if item['Name'] == 'Input.spreadsheet-key':
-            spreadsheet_key = item['Content']
 
     # from BaseSpace's documentation
     input_dir = '/data/input/samples/'
