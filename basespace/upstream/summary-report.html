@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+     <title>Summary Report</title>
+     <link rel="stylesheet" type="text/css"
+        href="https://da1s119xsxmu0.cloudfront.net/libraries/basestrap/1.0.0/css/master.min.css" />
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="col-xs-12">
+                <h1>Core Diversity Analysis Results:</h1>
+                {% for result in session.results %}
+                    {% for key in result.files %}
+
+                        {% comment %}
+                        I couldn't find a better way to determine which file is
+                        corediv-out/index.html so I just grab the first one and
+                        assume that's the one ... need to fix this.
+                        {% endcomment %}
+
+                        {% if key contains 'index.html' %}
+                            {{ result.files[key].content }}
+                            {% break %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
