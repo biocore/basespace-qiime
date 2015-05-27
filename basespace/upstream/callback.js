@@ -2,9 +2,9 @@ function launchSpec(dataProvider)
 {
     var ret = {
         // see script.sh in this folder 
-        appSessionName: "bsq pre-alpha",
+        appSessionName: "basespace-qiime pre-alpha",
         commandLine: [ "bash", "/upstream.sh" ],
-        containerImageId: "yoshikiv/bsq-debugging"
+        containerImageId: "yoshikiv/basespace-qiime-191"
     };
     return ret;
 }
