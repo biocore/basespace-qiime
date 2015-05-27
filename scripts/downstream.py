@@ -38,6 +38,9 @@ def main():
             spreadsheet_key = item['Content']
         if item['Name'] == 'Input.app-result-id':
             results_id = item['Content']['Id']
+        if item['Name'] == 'Input.rarefaction-depth':
+            depth = item['Content']
+
 
     # from BaseSpace's documentation
     input_dir = '/data/input/appresults/'
@@ -71,8 +74,6 @@ def main():
         alpha_fp.write('alpha_diversity:metrics shannon,PD_whole_tree,'
                        'chao1,observed_species')
 
-    # cast as int or core diversity will reject the value
-    depth = int(guess_even_sampling_depth(bt.nonzero_counts('sample')))
     cmd = ("core_diversity_analyses.py "
            "-i {biom_fp} -o {output_dir} -m {mapping_fp} -e {depth} "
            "-t {tree_fp} -a -O {jobs} -p {params_fp}")

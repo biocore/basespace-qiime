@@ -9,7 +9,15 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="col-xs-12">
-                <h1>Core Diversity Analysis Results:</h1>
+                <h1>QIIME Downstream</h1>
+                    <div>
+                        The results below represent basic diversity analyses
+                        based on the rarefaction level that you selected. For
+                        more information about the data presented here, please
+                        see <a href="http://qiime.org/scripts/core_diversity_analyses.html">
+                        <code>core_diversity_analyses.py</code></a>.
+                    </div>
+
                 {% for result in session.results %}
                     {% for key in result.files %}
 
