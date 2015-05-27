@@ -36,6 +36,8 @@ def main():
             project_id = item['Items'][0]['Id']
         if item['Name'] == 'Input.spreadsheet-key':
             spreadsheet_key = item['Content']
+        if item['Name'] == 'Input.app-result-id':
+            results_id = item['Content']['Id']
 
     # from BaseSpace's documentation
     input_dir = '/data/input/appresults/'
@@ -44,7 +46,7 @@ def main():
     create_dir(base)
 
     # OTU picking
-    input_dir = join(input_dir, 'closed-ref')
+    input_dir = join(input_dir, results_id)
 
     mapping_fp = join(base, 'mapping-file.txt')
     cmd = ("load_remote_mapping_file.py "
