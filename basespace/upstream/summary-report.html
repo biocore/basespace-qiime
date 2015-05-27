@@ -9,22 +9,71 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="col-xs-12">
-                <h1>Core Diversity Analysis Results:</h1>
+                <h1>QIIME Upstream</h1>
+                <div>
+                    The results below represent the data preparation steps of
+                    QIIME before you can perform diversity analyses. The things
+                    you will want to pay attention to are the number of
+                    sequences demultiplexed per sample, and the number of
+                    sequences assigned to an OTU. With this information, you
+                    should be able to proceed and decide on a reasonable
+                    rarefaction depth for your downstream analyses (see the
+                    BaseSpace application QIIME Downstream), where you will
+                    have to selected the OTU table you've generated with QIIME
+                    Upstream.
+                </div>
+                <br><br><br>
+
+                <!-- start accordion -->
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                 {% for result in session.results %}
                     {% for key in result.files %}
 
-                        {% comment %}
-                        I couldn't find a better way to determine which file is
-                        corediv-out/index.html so I just grab the first one and
-                        assume that's the one ... need to fix this.
-                        {% endcomment %}
-
-                        {% if key contains 'index.html' %}
-                            {{ result.files[key].content }}
-                            {% break %}
+                        <!-- start split libraries summary -->
+                        {% if key contains 'split_library_log.txt' %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="http://qiime.org/scripts/split_libraries_fastq.html" aria-expanded="true" aria-controls="collapseOne">
+                                            Summary produced by <code>split_libraries_fastq.py</code>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                  <div class="panel-body">
+                                    {{ result.files[key].content | newline_to_br }}
+                                  </div>
+                                </div>
+                            </div>
                         {% endif %}
+                        <!-- end split libraries summary -->
+
+
+                        <!-- start otu table summary -->
+                        {% if key contains 'table-summary.txt' %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="http://biom-format.org/documentation/summarizing_biom_tables.html" aria-expanded="true" aria-controls="collapseOne">
+                                            Summary produced by <code>biom summarize-table</code>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                  <div class="panel-body">
+                                    {{ result.files[key].content | newline_to_br }}
+                                  </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <!-- end otu table summary -->
+
                     {% endfor %}
                 {% endfor %}
+                </div>
+                <!-- end accordion -->
+
+
             </div>
         </div>
     </div>

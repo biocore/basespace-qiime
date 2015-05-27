@@ -13,17 +13,6 @@
             "id": "app-session-name"
         },
         {
-            "$type": "TextBox",
-            "size": 500,
-            "minLength": 0,
-            "maxLength": 150,
-            "value": "",
-            "label": "Spreadsheet Key",
-            "required": true,
-            "requiredMessage": "Please enter the key of your mapping file.",
-            "id": "spreadsheet-key"
-        },
-        {
             "$type": "SampleChooser",
             "size": 400,
             "valueType": "Input",
