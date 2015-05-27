@@ -41,6 +41,8 @@ def main():
     input_dir = '/data/input/appresults/'
     base = join('/data/output/appresults/', project_id)
 
+    create_dir(base)
+
     # OTU picking
     input_dir = join(input_dir, 'closed-ref')
 
