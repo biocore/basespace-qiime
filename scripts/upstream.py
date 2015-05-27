@@ -67,43 +67,12 @@ def main():
         with open(log_file, 'U') as fd_log:
             print fd_log.read()
 
-    if spreadsheet_key:
-        mapping_fp = join(base, 'mapping-file.txt')
-        cmd = ("load_remote_mapping_file.py "
-               "-k {spreadsheet_key} -o {mapping_fp}")
-        params = {'spreadsheet_key': spreadsheet_key, 'mapping_fp': mapping_fp}
-
-        system_call(cmd.format(**params))
-
-        biom_fp = join(output_dir, 'otu_table.biom')
-        tree_fp = glob(join(output_dir, '*.tree'))[0]
-        output_dir = join(base, 'corediv-out')
-
-        bt = load_table(biom_fp)
-
-        if bt.is_empty():
-            logging.error('BIOM table is empty, cannot perform diversity '
-                          'analyses.')
-            return 11
-
-        params_fp = join(base, 'alpha-params.txt')
-        with open(params_fp, 'w') as alpha_fp:
-            alpha_fp.write('alpha_diversity:metrics shannon,PD_whole_tree,'
-                           'chao1,observed_species')
-
-        # cast as int or core diversity will reject the value
-        depth = int(guess_even_sampling_depth(bt.nonzero_counts('sample')))
-        cmd = ("core_diversity_analyses.py "
-               "-i {biom_fp} -o {output_dir} -m {mapping_fp} -e {depth} "
-               "-t {tree_fp} -a -O {jobs} -p {params_fp}")
-        params = {'biom_fp': biom_fp, 'output_dir': output_dir,
-                  'mapping_fp': mapping_fp, 'depth': depth, 'jobs': '4',
-                  'tree_fp': tree_fp, 'params_fp': params_fp}
-        system_call(cmd.format(**params))
-
-        for log_file in glob(join(output_dir, 'log_*')):
-            with open(log_file, 'U') as fd_log:
-                print fd_log.read()
+    input_dir = join(output_dir, 'otu_table.biom')
+    output_dir = join(base, 'closed-ref', 'table-summary.txt')
+    cmd = ("biom summarize-table "
+           "-i '{input_table}' -o '{output_summary}'")
+    params = {'input_table': input_dir, 'output_summary': output_dir}
+    system_call(cmd.format(**params))
 
     return 0
 
