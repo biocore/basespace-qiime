@@ -27,10 +27,13 @@ def main():
     with open('/data/input/AppSession.json', 'U') as fd_json:
         app = json.load(fd_json)
 
+    jobs = '1'
     # get command attributes, etc
     for item in app['Properties']['Items']:
         if item['Name'] == 'Input.Projects':
             project_id = item['Items'][0]['Id']
+        if item['Name'] == 'Input.number-of-jobs':
+            jobs = item['Content']
 
     # from BaseSpace's documentation
     input_dir = '/data/input/samples/'
@@ -55,7 +58,11 @@ def main():
     output_dir = join(base, 'closed-ref')
     cmd = ("pick_closed_reference_otus.py "
            "-i '{input_seqs}' -o '{output_dir}'")
-    params = {'input_seqs': input_dir, 'output_dir': output_dir}
+    params = {'input_seqs': input_dir, 'output_dir': output_dir, 'jobs': jobs}
+
+    # see https://github.com/biocore/qiime/issues/2034
+    if jobs != '1':
+        cmd += ' -a -O {jobs}'
 
     system_call(cmd.format(**params))
     for log_file in glob(join(output_dir, 'log_*')):

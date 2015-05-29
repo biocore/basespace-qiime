@@ -3,7 +3,7 @@
     "fields": [
         {
             "$type": "TextBox",
-            "size": 500,
+            "size": 400,
             "minLength": 0,
             "maxLength": 150,
             "value": "Example [LocalDateTime]",
@@ -22,6 +22,17 @@
             "id": "sample-id",
             "rules": "sample-is-not-empty" ,
             "multiselect": true
+        },
+        {
+            "$type": "Numeric",
+            "id": "number-of-jobs",
+            "size": 400,
+            "required": true,
+            "label": "Number of parallel jobs for OTU picking (up to 32)",
+            "min": 1,
+            "max": 32,
+            "value": 1,
+            "numericType": "Integer"
         },
         {
             "$type": "ProjectChooser",
