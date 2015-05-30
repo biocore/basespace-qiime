@@ -34,6 +34,17 @@
           "numericType": "Integer"
         },
         {
+            "$type": "Numeric",
+            "id": "number-of-jobs",
+            "size": 100,
+            "required": true,
+            "label": "Number of parallel jobs for diversity analyses (up to 32)",
+            "min": 1,
+            "max": 32,
+            "value": 1,
+            "numericType": "Integer"
+        },
+        {
             "$type": "AppResultChooser",
             "size": 500,
             "valueType": "Input",

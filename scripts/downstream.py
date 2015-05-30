@@ -39,6 +39,8 @@ def main():
             results_id = item['Content']['Id']
         if item['Name'] == 'Input.rarefaction-depth':
             depth = item['Content']
+        if item['Name'] == 'Input.number-of-jobs':
+            jobs = item['Content']
 
 
     # from BaseSpace's documentation
@@ -75,10 +77,15 @@ def main():
 
     cmd = ("core_diversity_analyses.py "
            "-i {biom_fp} -o {output_dir} -m {mapping_fp} -e {depth} "
-           "-t {tree_fp} -a -O {jobs} -p {params_fp}")
+           "-t {tree_fp} -p {params_fp}")
     params = {'biom_fp': biom_fp, 'output_dir': output_dir,
-              'mapping_fp': mapping_fp, 'depth': depth, 'jobs': '4',
+              'mapping_fp': mapping_fp, 'depth': depth, 'jobs': jobs,
               'tree_fp': tree_fp, 'params_fp': params_fp}
+
+    # see https://github.com/biocore/qiime/issues/2034
+    if jobs != '1':
+        cmd += ' -a -O {jobs}'
+
     system_call(cmd.format(**params))
 
     for log_file in glob(join(output_dir, 'log_*')):
