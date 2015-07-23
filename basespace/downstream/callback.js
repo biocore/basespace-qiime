@@ -4,7 +4,8 @@ function launchSpec(dataProvider)
         // see script.sh in this folder 
         appSessionName: "basespace-qiime pre-alpha",
         commandLine: [ "bash", "/downstream.sh" ],
-        containerImageId: "yoshikiv/basespace-qiime-191"
+        containerImageId: "yoshikiv/basespace-qiime-191",
+        Options: [ "bsfs.enabled=true" ]
     };
     return ret;
 }
