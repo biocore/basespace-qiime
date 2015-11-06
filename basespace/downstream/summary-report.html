@@ -30,12 +30,15 @@
                         {% comment %}
                         I couldn't find a better way to determine which file is
                         corediv-out/index.html so I just grab the first one and
-                        assume that's the one ... need to fix this.
+                        check that the word 'emperor' is not part of the path
                         {% endcomment %}
 
                         {% if key contains 'index.html' %}
-                            {{ result.files[key].content }}
-                            {% break %}
+                            {% if key contains 'emperor' %}
+                                {% continue %}
+                            {% else %}
+                                {{ result.files[key].content }}
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
